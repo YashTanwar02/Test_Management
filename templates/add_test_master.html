@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Test Master</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+</head>
+<body>
+    <div class="dashboard-container">
+        <nav class="sidebar">
+            <ul>
+                <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('users') }}">Users</a></li>
+                <li><a href="{{ url_for('test_type') }}">Test Type</a></li>
+                <li><a href="{{ url_for('test_master') }}" class="active">Test Master</a></li>
+                <li><a href="{{ url_for('allocate_test') }}">Allocate Test</a></li>
+                <li><a href="{{ url_for('user_test') }}">User Test</a></li>
+                <li><a href="{{ url_for('reports') }}">Reports</a></li>
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+            </ul>
+        </nav>
+
+        <div class="content">
+            <h2>Add Test Master</h2>
+            
+            <div class="form-container">
+                <form action="{{ url_for('add_test_master') }}" method="POST" enctype="multipart/form-data">
+                    
+                    <label for="test_type">Test Type:</label>
+<select id="test_type" name="test_type" required>
+    <option value="" disabled selected>Select Test Type</option>
+    {% for test in test_types %}
+        <option value="{{ test.id }}">{{ test.test_type }}</option>
+    {% endfor %}
+</select>
+
+
+                    <div class="add-test-master-form-group">
+                        <label for="question">Question:</label>
+                        <textarea id="question" name="question" required></textarea>
+                    </div>
+                    
+                    <div class="add-test-master-form-group">
+                        <label for="question_image">Question Image:</label>
+                        <input type="file" id="question_image" name="question_image" accept="image/*">
+                    </div>
+                    
+
+                    <label for="option_a">Option (A):</label>
+                    <input type="text" id="option_a" name="option_a" required>
+
+                    <label for="option_b">Option (B):</label>
+                    <input type="text" id="option_b" name="option_b" required>
+
+                    <label for="option_c">Option (C):</label>
+                    <input type="text" id="option_c" name="option_c" required>
+
+                    <label for="option_d">Option (D):</label>
+                    <input type="text" id="option_d" name="option_d" required>
+
+                    <label for="correct_option">Correct Option:</label>
+                    <select id="correct_option" name="correct_option" required>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                    </select>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save</button>
+                        <a href="{{ url_for('test_master') }}" class="btn btn-secondary"><i class="fas fa-times"></i> Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

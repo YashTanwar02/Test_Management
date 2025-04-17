@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Allocate Test</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+</head>
+<body>
+    <div class="dashboard-container">
+        <nav class="sidebar">
+            <ul>
+                <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('users') }}">Users</a></li>
+                <li><a href="{{ url_for('test_type') }}">Test Type</a></li>
+                <li><a href="{{ url_for('test_master') }}">Test Master</a></li>
+                <li><a href="{{ url_for('allocate_test') }}" class="active">Allocate Test</a></li>
+                <li><a href="{{ url_for('user_test') }}">User Test</a></li>
+                <li><a href="{{ url_for('reports') }}">Reports</a></li>
+                <li><a href="{{ url_for('logout') }}">Logout</a></li> 
+            </ul>
+        </nav>
+
+        <div class="content">
+            <h2>Allocate Test</h2>
+
+            <div class="test-actions">
+                <form method="POST" class="allocate-form">
+                    <label for="user">Select User:</label>
+                    <select name="user_id" id="user" required>
+                        <option value="">-- Select User --</option>
+                        {% for user in users %}
+                        <option value="{{ user.id }}">{{ user.full_name }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <label for="test_type">Select Test Type:</label>
+                    <select name="test_type_id" id="test_type" required>
+                        <option value="">-- Select Test Type --</option>
+                        {% for test in test_types %}
+                        <option value="{{ test.id }}">{{ test.test_type }} ({{ test.language }})</option>
+                        {% endfor %}
+                    </select>
+
+                    <button type="submit" class="btn btn-primary">Allocate</button>
+                </form>
+            </div>
+
+            <div class="test-table">
+                <h3>Allocated Tests</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>User</th>
+                            <th>Test Type</th>
+                            <th>Assigned On</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for allocation in allocated_tests %}
+                        <tr>
+                            <td>{{ allocation.id }}</td>
+                            <td>{{ allocation.user.full_name }}</td>
+                            <td>{{ allocation.test_type.test_type }} ({{ allocation.test_type.language }})</td>
+                            <td>{{ allocation.assigned_at.strftime("%d-%m-%Y %H:%M") if allocation.assigned_at else 'N/A' }}</td>
+                            <td>
+                                <a href="{{ url_for('delete_allocated_test', allocation_id=allocation.id) }}" class="delete" 
+                                   onclick="return confirm('Are you sure you want to delete this allocation?');">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

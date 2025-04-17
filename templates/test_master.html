@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Master</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+</head>
+<body>
+    <div class="dashboard-container">
+        <nav class="sidebar">
+            <ul>
+                <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('users') }}">Users</a></li>
+                <li><a href="{{ url_for('test_type') }}">Test Type</a></li>
+                <li><a href="{{ url_for('test_master') }}"class="active">Test Master</a></li>
+                <li><a href="{{ url_for('allocate_test') }}">Allocate Test</a></li>
+                <li><a href="{{ url_for('user_test') }}">User Test</a></li>
+                <li><a href="{{ url_for('reports') }}">Reports</a></li>
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+            </ul>
+        </nav>
+
+        <div class="content">
+            <h2>Test Master</h2>
+            
+            <div class="test-actions">
+                <form method="POST" class="search-form">
+                    <input type="text" name="search" placeholder="Search">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </form>
+                <a href="{{ url_for('add_test_master') }}" class="btn btn-secondary">Add Test Master</a>
+            </div>
+
+            <div class="test-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Test Type</th>
+                            <th>Question</th>
+                            <th>Question Image</th>
+                            <th>Option A</th>
+                            <th>Option B</th>
+                            <th>Option C</th>
+                            <th>Option D</th>
+                            <th>Correct Option</th>
+                            <th>Created On</th>
+                            <th>Created By</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for test in test_master %}
+                        <tr>
+                            <td>{{ test.id }}</td>
+                            <td>{{ test.test_type }}</td>
+                            <td>{{ test.question }}</td>
+                            <td>
+                                {% if test.question_image %}
+                                    <img src="{{ url_for('static', filename='uploads/' + test.question_image) }}" width="50">
+                                {% else %}
+                                    No Image
+                                {% endif %}
+                            </td>
+                            
+                            <td>{{ test.option_a }}</td>
+                            <td>{{ test.option_b }}</td>
+                            <td>{{ test.option_c }}</td>
+                            <td>{{ test.option_d }}</td>
+                            <td>{{ test.correct_option }}</td>
+                            <td>{{ test.created_on.strftime("%d-%m-%Y %H:%M") }}</td>
+                            <td>{{ test.creator.full_name if test.creator else 'Unknown' }}</td>
+                            <td>
+                                <a href="{{ url_for('delete_test_master', test_id=test.id) }}" class="delete" onclick="return confirm('Are you sure?');">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

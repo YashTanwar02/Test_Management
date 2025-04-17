@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Type</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <ul>
+                <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('users') }}">Users</a></li>
+                <li><a href="{{ url_for('test_type') }}" class="active">Test Type</a></li>
+                <li><a href="{{ url_for('test_master') }}">Test Master</a></li>
+                <li><a href="{{ url_for('allocate_test') }}">Allocate Test</a></li>
+                <li><a href="{{ url_for('user_test') }}">User Test</a></li>
+                <li><a href="{{ url_for('reports') }}">Reports</a></li>
+                <li><a href="{{ url_for('logout') }}">Logout</a></li> 
+            </ul>
+        </nav>
+
+        <div class="content">
+            <h2>Test Type</h2>
+
+            <!-- Search Form & Add Test Type Button -->
+            <div class="test-actions">
+                <form method="POST" class="search-form">
+                    <input type="text" name ="search" placeholder="Search" id="test_type">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </form>
+                <a href="{{ url_for('add_test_type') }}" class="btn btn-secondary">Add Test Type</a>
+            </div>
+
+            <div class="test-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Test Type</th>
+                            <th>Language</th>
+                            <th>Created On</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for test in test_types %}
+                        <tr>
+                            <td>{{ test.id }}</td>
+                            <td>{{ test.test_type }}</td>
+                            <td>{{ test.language }}</td>
+                            <td>{{ test.created_at.strftime("%d-%m-%Y %H:%M") if test.created_at else 'N/A' }}</td>
+                            <td>
+                                <a href="{{ url_for('delete_test_type', id=test.id) }}" class="delete" onclick="return confirm('Are you sure?');">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

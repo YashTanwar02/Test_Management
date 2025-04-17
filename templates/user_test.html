@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Test</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+</head>
+<body>
+    <div class="dashboard-container">
+        <nav class="sidebar">
+            <ul>
+                <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('users') }}">Users</a></li>
+                <li><a href="{{ url_for('test_type') }}">Test Type</a></li>
+                <li><a href="{{ url_for('test_master') }}">Test Master</a></li>
+                <li><a href="{{ url_for('allocate_test') }}">Allocate Test</a></li>
+                <li><a href="{{ url_for('user_test') }}" class="active">User Test</a></li>
+                <li><a href="{{ url_for('reports') }}">Reports</a></li>
+                <li><a href="{{ url_for('logout') }}">Logout</a></li> 
+            </ul>
+        </nav>
+
+        <div class="last_test_content">
+            <h2>User Test</h2>
+
+            <!-- Select Test Type -->
+            <form id="test-selection-form">
+                <label for="testType">Select Test Type:</label>
+                <select id="testType" name="test_type" required>
+                    <option value="">--Select--</option>
+                    {% for test_type in test_types %}
+                        <option value="{{ test_type.id }}">{{ test_type.test_type }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="btn btn-primary">Start Test</button>
+            </form>
+
+            <div id="test-section" style="display: none;">
+                <h3 id="question-text"></h3>
+                <img id="question-image" src="" alt="" style="max-width: 200px; display: none;">
+
+                <form id="question-form">
+                    <label><input type="radio" name="option" value="A"> <span id="optionA"></span></label><br>
+                    <label><input type="radio" name="option" value="B"> <span id="optionB"></span></label><br>
+                    <label><input type="radio" name="option" value="C"> <span id="optionC"></span></label><br>
+                    <label><input type="radio" name="option" value="D"> <span id="optionD"></span></label><br>
+                    <button type="submit" class="btn btn-secondary">Submit Answer</button>
+                </form>
+
+                <p id="result-message"></p>
+                <button id="next-question" class="btn btn-primary" style="display: none;">Next Question</button>
+            </div>
+
+            <div id="final-result" style="display: none;">
+                <h3>Test Completed</h3>
+                <p>Your Score: <span id="final-score"></span></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let questions = [];
+        let currentIndex = 0;
+        let score = 0;
+
+        // Start Test
+        $("#test-selection-form").submit(function(event) {
+            event.preventDefault();
+            let testType = $("#testType").val();
+        
+            if (testType) {
+                $.get(`/get_questions/${testType}`, function(data) { 
+                    questions = data.questions;
+                    if (questions.length > 0) {
+                        $("#test-selection-form").hide();
+                        $("#test-section").show();
+                        currentIndex = 0;
+                        loadQuestion();
+                    } else {
+                        alert("No questions available for this test type.");
+                    }
+                }).fail(function(xhr, status, error) {
+                    console.error("Error fetching questions:", status, error);
+                    alert("Failed to fetch questions. Please check the console.");
+                });
+            }
+        });
+
+        // Load Question
+        function loadQuestion() {
+            let q = questions[currentIndex];
+            $("#question-text").text(q.question);
+            if (q.question_image) {
+                $("#question-image").attr("src", "/static/uploads/" + q.question_image).show();
+            } else {
+                $("#question-image").hide();
+            }
+            $("#optionA").text(q.option_a);
+            $("#optionB").text(q.option_b);
+            $("#optionC").text(q.option_c);
+            $("#optionD").text(q.option_d);
+            $("#result-message").text("");
+            $("#next-question").hide();
+            $("input[name='option']").prop("checked", false);
+        }
+
+        // Submit Answer
+        $("#question-form").submit(function(event) {
+            event.preventDefault();
+            let selectedOption = $("input[name='option']:checked").val();
+            if (!selectedOption) {
+                alert("Please select an option.");
+                return;
+            }
+
+            let correctOption = questions[currentIndex].correct_option;
+            if (selectedOption === correctOption) {
+                $("#result-message").text("Correct! You passed this question.").css("color", "green");
+                score++;
+            } else {
+                $("#result-message").text("Wrong! You failed this question.").css("color", "red");
+            }
+
+            if (currentIndex < questions.length - 1) {
+                $("#next-question").show();
+            } else {
+                $("#test-section").hide();
+                $("#final-result").show();
+                $("#final-score").text(score + " / " + questions.length);
+                submitTestResults(); // Send data to backend
+            }
+        });
+
+        // Next Question
+        $("#next-question").click(function() {
+            currentIndex++;
+            loadQuestion();
+        });
+
+        // Function to Submit Test Results
+        function submitTestResults() {
+            $.ajax({
+                url: '/submit_test',
+                type: 'POST',
+                contentType: 'application/json',  // Specify JSON format
+                data: JSON.stringify({
+                    test_type: $("#testType").val(),
+                    score: score,
+                    total_questions: questions.length
+                }),
+                success: function(response) {
+                    console.log("Test result saved:", response);
+                    alert("Test completed. Your score has been recorded.");
+                    window.location.href = "/dashboard";  // Redirect to refresh stats
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error submitting test:", status, error);
+                    alert("Error saving test results.");
+                }
+            });
+        }
+    </script>
+</body>
+</html>

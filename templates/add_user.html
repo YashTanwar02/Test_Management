@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add User</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <ul>
+                <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('users') }}" class="active">Users</a></li>
+                <li><a href="{{ url_for('test_type') }}">Test Type</a></li>
+                <li><a href="{{ url_for('test_master') }}">Test Master</a></li>
+                <li><a href="{{ url_for('allocate_test') }}">Allocate Test</a></li>
+                <li><a href="{{ url_for('user_test') }}">User Test</a></li>
+                <li><a href="{{ url_for('reports') }}">Reports</a></li>
+                <li><a href="{{ url_for('logout') }}">Logout</a></li> 
+            </ul>
+        </nav>
+
+        <div class="content">
+            <h2>Add New User</h2>
+
+            <div class="user-form-container">
+                <form method="POST" class="user-form">
+                    <div class="form-group">
+                        <label for="full_name">Full Name</label>
+                        <input type="text" id="full_name" name="full_name" placeholder="Enter full name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" placeholder="Enter email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="phone">Phone</label>
+                        <input type="text" id="phone" name="phone" placeholder="Enter phone number" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone">Password</label>
+                        <input type="text" id="password_hash" name="password" placeholder="Enter password" required>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Add User</button>
+                </form>
+                <div class="form-footer">
+                    <a href="{{ url_for('users') }}" class="btn btn-secondary">Back to User List</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

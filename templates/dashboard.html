@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <nav class="sidebar">
+            <ul>
+                <li><a href="{{ url_for('dashboard') }}" class="active">Dashboard</a></li>
+                <li><a href="{{ url_for('users') }}">Users</a></li>
+                <li><a href="{{ url_for('test_type') }}">Test Type</a></li>
+                <li><a href="{{ url_for('test_master') }}">Test Master</a></li>
+                <li><a href="{{ url_for('allocate_test') }}">Allocate Test</a></li>
+                <li><a href="{{ url_for('user_test') }}">User Test</a></li>
+                <li><a href="{{ url_for('reports') }}">Reports</a></li>
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+            </ul>
+        </nav>
+
+        <div class="content">
+            <h2>Welcome, "{{ user.full_name }}"</h2>
+            <img src="{{ url_for('static', filename='uploads/' + user.profile_picture) }}" alt="Profile Picture" width="150">
+
+            <!-- Cards Section -->
+            <div class="dashboard-stats">
+                <div class="card">
+                    <h5 class="card-title"><i class="fas fa-user-graduate"></i> Total Students</h5>
+                    <h2>{{ total_students }}</h2>
+                </div>
+                <div class="card">
+                    <h5 class="card-title"><i class="fas fa-user-plus"></i> New Students</h5>
+                    <h2>{{ new_students }}</h2>
+                </div>
+                <div class="card">
+                    <h5 class="card-title"><i class="fas fa-file-alt"></i> Test Types</h5>
+                    <h2>{{ test_types }}</h2>
+                </div>
+                <div class="card">
+                    <h5 class="card-title"><i class="fas fa-history"></i> Total Attempts</h5>
+                    <h2>{{ total_attempts }}</h2>
+                </div>
+                <div class="card">
+                    <h5 class="card-title"><i class="fas fa-check-circle"></i> Passed Attempts</h5>
+                    <h2>{{ passed_attempts }}</h2>
+                </div>
+                <div class="card">
+                    <h5 class="card-title"><i class="fas fa-times-circle"></i> Failed Attempts</h5>
+                    <h2>{{ failed_attempts }}</h2>
+                </div>
+            </div>
+
+            <!-- Line Graph Section -->
+            <div class="chart-container" style="width: 80%; margin: auto;">
+                <canvas id="dashboardChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const ctx = document.getElementById('dashboardChart').getContext('2d');
+        
+        const chartData = {
+            labels: ['Total Students', 'New Students', 'Test Types', 'Total Attempts', 'Passed Attempts', 'Failed Attempts'],
+            datasets: [{
+                label: 'Dashboard Statistics',
+                data: [{{ total_students }}, {{ new_students }}, {{ test_types }}, {{ total_attempts }}, {{ passed_attempts }}, {{ failed_attempts }}],
+                borderColor: 'rgb(108, 165, 251)',
+                backgroundColor: 'rgba(163, 61, 231, 0.94)',
+                borderWidth: 3,
+                tension: 0.5
+            }]
+        };
+        
+        const dashboardChart = new Chart(ctx, {
+            type: 'line',
+            data: chartData,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: true
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <nav class="sidebar">
+            <ul>
+                <li><a href="{{ url_for('dashboard') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('users') }}">Users</a></li>
+                <li><a href="{{ url_for('test_type') }}">Test Type</a></li>
+                <li><a href="{{ url_for('test_master') }}">Test Master</a></li>
+                <li><a href="{{ url_for('allocate_test') }}">Allocate Test</a></li>
+                <li><a href="{{ url_for('user_test') }}">User Test</a></li>
+                <li><a href="{{ url_for('reports') }}" class="active">Reports</a></li>
+                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+            </ul>
+        </nav>
+
+        <div class="content">
+            <h2>Exam Reports</h2>
+            
+            <!-- Cards Section -->
+            <div class="dashboard-stats">
+                <div class="card">
+                    <h5 class="card-title"><i class="fas fa-user-graduate"></i> Total Students</h5>
+                    <h2>{{ total_students }}</h2>
+                </div>
+                <div class="card">
+                    <h5 class="card-title"><i class="fas fa-check-circle"></i> Passed Attempts</h5>
+                    <h2>{{ pass_count }}</h2>
+                </div>
+                <div class="card">
+                    <h5 class="card-title"><i class="fas fa-times-circle"></i> Failed Attempts</h5>
+                    <h2>{{ fail_count }}</h2>
+                </div>
+            </div>
+
+            <!-- Exam Attempts Table -->
+            <h3>Exam Attempts</h3>
+            <div class="report-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Student Name</th>
+                            <th>Test Type</th>
+                            <th>Score</th>
+                            <th>Total Questions</th>
+                            <th>Status</th>
+                            <th>Attempted On</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for attempt in exam_attempts %}
+                        <tr>
+                            <td>{{ attempt.user.full_name }}</td>
+                            <td>{{ attempt.test_type.test_type }}</td>
+                            <td>{{ attempt.score }}</td>
+                            <td>{{ attempt.total_questions }}</td>
+                            <td>{{ attempt.status }}</td>
+                            <td>{{ attempt.attempted_at.strftime('%d-%m-%Y %H:%M:%S') }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pie Chart Section -->
+            <h3>Pass/Fail Ratio</h3>
+            <div class="pie-chart-container">
+                <canvas id="examChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const ctx = document.getElementById('examChart').getContext('2d');
+        const examChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['Passed', 'Failed'],
+                datasets: [{
+                    data: [{{ pass_count }}, {{ fail_count }}],
+                    backgroundColor: ['#4CAF50', '#F44336']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
